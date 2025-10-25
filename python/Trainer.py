@@ -17,7 +17,7 @@ heart=heart.drop(['thal'],axis=1)
 
 train, test = train_test_split(heart, test_size=0.1)
 
-trainInputs = train[['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach']].values
+trainInputs = train[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values
 #print(trainInputs)
 
 
@@ -31,7 +31,7 @@ inputs = torch.tensor(trainInputs, dtype=torch.float)
 targets = torch.tensor(trainTargets, dtype=torch.long)
 #print(targets)
 
-testInputs = torch.tensor(test[['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach']].values, dtype=torch.float)
+testInputs = torch.tensor(test[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values, dtype=torch.float)
 #print(testInputs)
 testTarget = torch.tensor(test[test.columns[12]].values, dtype=torch.long)
 #print(testTarget)

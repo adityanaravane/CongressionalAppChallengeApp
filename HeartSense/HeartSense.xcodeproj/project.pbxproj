@@ -10,9 +10,22 @@
 		A1D6C45D2EA98F1E0040FFC2 /* HeartSense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeartSense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "HeartSense" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A1D6C45C2EA98F1E0040FFC2 /* HeartSense */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A1D6C45F2EA98F1E0040FFC2 /* HeartSense */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "HeartSense" target */,
+			);
 			path = HeartSense;
 			sourceTree = "<group>";
 		};
@@ -254,6 +267,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HeartSense/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -286,6 +301,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HeartSense/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
