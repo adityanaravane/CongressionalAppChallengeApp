@@ -4,11 +4,12 @@ import pandas as pd
 import torch.utils.model_zoo as model_zoo
 import torch.onnx
 from torch import nn
+import onnxscript
 import torch.nn.init as init
 from sklearn.model_selection import train_test_split
 from nn import NeuralNetwork
 device = torch.device("cpu")
-heart = pd.read_csv("heart.csv")
+heart = pd.read_csv("data.csv")
 heart=heart.drop(['thal'],axis=1)
 #print(heart.head())
 #print(heart.columns)
@@ -16,7 +17,7 @@ heart=heart.drop(['thal'],axis=1)
 
 train, test = train_test_split(heart, test_size=0.1)
 
-trainInputs = train[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values
+trainInputs = train[['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach']].values
 #print(trainInputs)
 
 
@@ -30,7 +31,7 @@ inputs = torch.tensor(trainInputs, dtype=torch.float)
 targets = torch.tensor(trainTargets, dtype=torch.long)
 #print(targets)
 
-testInputs = torch.tensor(test[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values, dtype=torch.float)
+testInputs = torch.tensor(test[['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach']].values, dtype=torch.float)
 #print(testInputs)
 testTarget = torch.tensor(test[test.columns[12]].values, dtype=torch.long)
 #print(testTarget)
@@ -77,32 +78,37 @@ with torch.no_grad():
     #print(testTarget)
 
 # Export the model
-'''
-torch.onnx.export(model,               # model being run
-                  testInputs,                         # model input (or a tuple for multiple inputs)
-                  "heart.onnx",   # where to save the model (can be a file or file-like object)
-                  export_params=True,        # store the trained parameter weights inside the model file
-                  opset_version=10,          # the ONNX version to export the model to
-                  do_constant_folding=True,  # whether to execute constant folding for optimization
-                  input_names = ['age', 'sex','cp','trestbps','chol', 'restecg', 'thalach', 'exang', 'oldpeak', 'fbs', 'slope','ca',],   # the model's input names
-                  output_names = ['target'], # the model's output names
-                  dynamic_axes={'input' : {0 : 'batch_size'},    # variable length axes
-                                'output' : {0 : 'batch_size'}})
+torch.onnx.export(
+    model,
+    testInputs,
+    "heart.onnx",
+    export_params=True,
+    opset_version=17,
+    do_constant_folding=True,
+    input_names=['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach'],
+    output_names=['target'],
+    dynamic_shapes={'x': {0: 'batch_size'}}
+)
+
+
 
 
 x = torch.rand((12, 1), dtype=torch.float)
 torch.onnx.export(
-            model,
-            x,
-            "heart.onnx",
-            export_params=True,
-            opset_version=10,
-            do_constant_folding=True,
-            #input_names = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca'],   # the model's input names
-            output_names = ['target'])
+    model,
+    testInputs,
+    "heart.onnx",
+    export_params=True,
+    opset_version=17,
+    do_constant_folding=True,
+    input_names=['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach'],
+    output_names=['target'],
+    dynamic_shapes={'x': {0: 'batch_size'}}
+)
 
 
-'''
+
+
 
 torch.save(model.state_dict(), "heart.model")
-file_obj.close()
+#file_obj.close()
