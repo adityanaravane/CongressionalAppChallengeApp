@@ -46,10 +46,31 @@ class HealthStore {
         healthstore.execute(query)
     }
     
-//    func fetchAge(completion: @escaping(double, Error?) -> Void) {
-//        let dobType = HKObjectType.characteristicType(forIdentifier: .dateOfBirth)!
-//        let currentYear = Calendar.current.component(.year, from: Date())
-//        
-//    }
+    func fetchAge(completion: @escaping (Int?, Error?) -> Void) {
+        do {
+            // Retrieve date of birth components from HealthKit
+            let components = try healthstore.dateOfBirthComponents()
+            // Build a date from the components using the current calendar
+            if let dob = Calendar.current.date(from: components) {
+                // Compute full years between dob and now
+                let ageComponents = Calendar.current.dateComponents([.year], from: dob, to: Date())
+                let age = ageComponents.year
+                DispatchQueue.main.async {
+                    completion(age, nil)
+                }
+            } else {
+                // Could not form a date from components
+                DispatchQueue.main.async {
+                    let error = NSError(domain: "HealthStore", code: 1, userInfo: [NSLocalizedDescriptionKey: "Unable to construct date of birth from components."])
+                    completion(nil, error)
+                }
+            }
+        } catch {
+            // Propagate HealthKit error (e.g., not authorized or unavailable)
+            DispatchQueue.main.async {
+                completion(nil, error)
+            }
+        }
+    }
 }
 

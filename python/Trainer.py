@@ -8,6 +8,7 @@ import onnxscript
 import torch.nn.init as init
 from sklearn.model_selection import train_test_split
 from nn import NeuralNetwork
+import coremltools as ct
 device = torch.device("cpu")
 heart = pd.read_csv("data.csv")
 heart=heart.drop(['thal'],axis=1)
@@ -112,3 +113,24 @@ torch.onnx.export(
 
 torch.save(model.state_dict(), "heart.model")
 #file_obj.close()
+
+# ============================================
+# Convert the trained PyTorch model to CoreML
+# ============================================
+
+# Set model to evaluation mode
+
+model.eval()
+example_input = torch.randn(1, 12, dtype=torch.float)
+traced_model = torch.jit.trace(model, example_input)
+
+mlmodel = ct.convert(
+        traced_model,
+        convert_to="neuralnetwork",
+        minimum_deployment_target=ct.target.iOS14,
+        inputs=[ct.TensorType(name="input", shape=example_input.shape)],)
+
+mlmodel.save("heart.mlmodel")
+print("✅ CoreML model saved successfully as heart.mlmodel")
+
+
