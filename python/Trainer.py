@@ -16,121 +16,104 @@ heart=heart.drop(['thal'],axis=1)
 #print(heart.columns)
 #exit(0)
 
-train, test = train_test_split(heart, test_size=0.1)
+if __name__ == "__main__":
 
-trainInputs = train[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values
-#print(trainInputs)
+    train, test = train_test_split(heart, test_size=0.1)
 
-
-
-trainTargets = train[train.columns[12]].values
-#print(trainTargets)
+    trainInputs = train[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values
+    #print(trainInputs)
 
 
 
-inputs = torch.tensor(trainInputs, dtype=torch.float)
-targets = torch.tensor(trainTargets, dtype=torch.long)
-#print(targets)
-
-testInputs = torch.tensor(test[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values, dtype=torch.float)
-#print(testInputs)
-testTarget = torch.tensor(test[test.columns[12]].values, dtype=torch.long)
-#print(testTarget)
-
-#print(testInputs.size())
-
-#print(inputs.shape[1])
-#exit(0)
+    trainTargets = train[train.columns[12]].values
+    #print(trainTargets)
 
 
 
-model = NeuralNetwork(input_size=inputs.shape[1], hidden_size=256, num_classes=targets.max().item()+1)
+    inputs = torch.tensor(trainInputs, dtype=torch.float)
+    targets = torch.tensor(trainTargets, dtype=torch.long)
+    #print(targets)
 
-model.to(device)
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-num_epochs = 10000
-model.train(True)
-#file_obj = open("writing.txt", "w")
-
-for epoch in range(num_epochs):
-    outputs = model(inputs.to(torch.float))
-    loss = criterion(outputs, targets)
-
-    print(f"Epoch: {epoch + 1}/{num_epochs}, Loss: {loss.item():.4f}")
-    #print(outputs)
-    #file_obj.write(f'\n{loss.item():.4f}')
-
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
-model.train(False)
-
-#prediction
-# Step 6: Evaluate the model on the test set
-with torch.no_grad():
-    probabilities = model(testInputs)
-    loss = criterion(probabilities, testTarget)
-    print(f'Test set loss: {loss.item():.4f}')
-
-    _, predicted_classes = torch.max(probabilities, dim=1)
-    #print(predicted_classes)
+    testInputs = torch.tensor(test[['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca']].values, dtype=torch.float)
+    #print(testInputs)
+    testTarget = torch.tensor(test[test.columns[12]].values, dtype=torch.long)
     #print(testTarget)
 
-# Export the model
-torch.onnx.export(
-    model,
-    testInputs,
-    "heart.onnx",
-    export_params=True,
-    opset_version=17,
-    do_constant_folding=True,
-    input_names=['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach'],
-    output_names=['target'],
-    dynamic_shapes={'x': {0: 'batch_size'}}
-)
+    #print(testInputs.size())
+
+    #print(inputs.shape[1])
+    #exit(0)
 
 
 
+    model = NeuralNetwork(input_size=inputs.shape[1], hidden_size=256, num_classes=targets.max().item()+1)
 
-x = torch.rand((12, 1), dtype=torch.float)
-torch.onnx.export(
-    model,
-    testInputs,
-    "heart.onnx",
-    export_params=True,
-    opset_version=17,
-    do_constant_folding=True,
-    input_names=['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach'],
-    output_names=['target'],
-    dynamic_shapes={'x': {0: 'batch_size'}}
-)
+    model.to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    num_epochs = 10000
+    model.train(True)
+    #file_obj = open("writing.txt", "w")
 
+    for epoch in range(num_epochs):
+        outputs = model(inputs.to(torch.float))
+        loss = criterion(outputs, targets)
 
+        print(f"Epoch: {epoch + 1}/{num_epochs}, Loss: {loss.item():.4f}")
+        #print(outputs)
+        #file_obj.write(f'\n{loss.item():.4f}')
 
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
+    model.train(False)
 
-torch.save(model.state_dict(), "heart.model")
-#file_obj.close()
+    #prediction
+    # Step 6: Evaluate the model on the test set
+    with torch.no_grad():
+        probabilities = model(testInputs)
+        loss = criterion(probabilities, testTarget)
+        print(f'Test set loss: {loss.item():.4f}')
 
-# ============================================
-# Convert the trained PyTorch model to CoreML
-# ============================================
+        _, predicted_classes = torch.max(probabilities, dim=1)
+        #print(predicted_classes)
+        #print(testTarget)
 
-# Set model to evaluation mode
+    torch.save(model.state_dict(), "heart.model")
+    #file_obj.close()
 
-model.eval()
-example_input = torch.randn(1, 12, dtype=torch.float)
-traced_model = torch.jit.trace(model, example_input)
+    # Export the model to onnx format
+    torch.onnx.export(
+        model,
+        testInputs,
+        "heart.onnx",
+        export_params=True,
+        opset_version=17,
+        do_constant_folding=True,
+        #input_names=['age', 'sex', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach'],
+        input_names=['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca'],
+        output_names=['target'],
+        dynamic_shapes={'x': {0: 'batch_size'}}
+    )
 
-mlmodel = ct.convert(
-        traced_model,
-        convert_to="neuralnetwork",
-        minimum_deployment_target=ct.target.iOS14,
-        inputs=[ct.TensorType(name="input", shape=example_input.shape)],)
+    # ============================================
+    # Convert the trained PyTorch model to CoreML
+    # ============================================
 
-mlmodel.save("heart.mlmodel")
-print("✅ CoreML model saved successfully as heart.mlmodel")
+    # Set model to evaluation mode
+
+    model.eval()
+    example_input = torch.randn(1, 12, dtype=torch.float)
+    traced_model = torch.jit.trace(model, example_input)
+
+    mlmodel = ct.convert(
+            traced_model,
+            convert_to="neuralnetwork",
+            minimum_deployment_target=ct.target.iOS14,
+            inputs=[ct.TensorType(name="input", shape=example_input.shape)],)
+
+    mlmodel.save("heart.mlmodel")
+    print("CoreML model saved successfully as heart.mlmodel")
 
 
