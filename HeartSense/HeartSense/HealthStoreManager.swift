@@ -177,7 +177,11 @@ class HealthStoreManager {
                         ecgData.time = Double(measurement.timeSinceSampleStart)
                         ecgData.voltage = voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli))
                         
-                        waveform.ecgData.append(ecgData)
+                        
+                        if ecgData.time < 2 {
+                            waveform.ecgData.append(ecgData)
+                        }
+                        
                         print("time: \(measurement.timeSinceSampleStart), voltage: \(voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli)))")
                         //waveform.timeValues.append(Double(measurement.timeSinceSampleStart))
                         //waveform.voltageValues.append(voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli)))

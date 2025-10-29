@@ -48,7 +48,7 @@ final class HeartModelRunner {
     // MARK: - Public API
 
     /// Returns `true`/`false` using `threshold` on positive-class probability, or `nil` if parsing fails.
-    func predict(
+    func predictManual(
         age: Double, sex: Double, cp: Double, trestbps: Double, chol: Double,
         fbs: Double, restecg: Double, thalach: Double, exang: Double,
         oldpeak: Double, slope: Double, ca: Double,
@@ -61,6 +61,37 @@ final class HeartModelRunner {
         ) else { return nil }
         return p >= threshold
     }
+    
+    func predict(userdata userData: AllData) -> Bool? {
+        let age: Double = Double(userData.healthkitInfo.age)
+        let sex: Double = (userData.healthkitInfo.gender == .female) ? 1.0 : 0.0
+        let cp: Double = Double(userData.chestPain.rawValue)
+        let trestbps: Double = Double(userData.healthkitInfo.heartRate)
+        let chol: Double = Double(userData.healthkitInfo.cholesterol)
+        let fbs: Double = userData.healthkitInfo.bloodGlucose > 120 ? 1.0 : 0.0
+        let thalach: Double = Double(userData.healthkitInfo.heartRate)
+        let exang: Double = userData.exerciseInducedPain ? 1.0 : 0.0
+        let oldpeak: Double = Double(userData.stDepression)
+        let slope: Double = Double(userData.stSlope)
+        let ca: Double = Double(userData.numVessels)
+        var restecg: Double = 0.0
+        if userData.ecgResults == .normal {
+            restecg = 0.0
+        }
+        if userData.ecgResults == .abnormal {
+             restecg = 1.0
+            
+        } else {
+             restecg = 0.0
+        }
+        
+
+        return predictManual(
+            age: age, sex: sex, cp: cp, trestbps: trestbps, chol: chol,
+            fbs: fbs, restecg: restecg, thalach: thalach, exang: exang,
+            oldpeak: oldpeak, slope: slope, ca: ca
+        )
+    }
 
     /// Returns positive-class probability in [0,1] if parseable; otherwise `nil`.
     func predictProbability(
@@ -69,7 +100,7 @@ final class HeartModelRunner {
         oldpeak: Double, slope: Double, ca: Double
     ) -> Double? {
 
-        let features: [Double] = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca]
+        let features: [Double] = [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca]]
 
         // Build input MLMultiArray with correct rank/shape/dtype (e.g., [1,12])
         guard let inputArray = makeInputArray(features) else { return nil }
@@ -78,6 +109,7 @@ final class HeartModelRunner {
             // Use a generic provider keyed by the discovered input name
             let provider = try MLDictionaryFeatureProvider(dictionary: [inputName: MLFeatureValue(multiArray: inputArray)])
             let out = try model.model.prediction(from: provider)
+            print("Heart model prediction: \(out)")
             // Parse to probability
             return parseOutputToProbability(out)
         } catch {
@@ -192,3 +224,4 @@ private extension MLFeatureValue {
         }
     }
 }
+

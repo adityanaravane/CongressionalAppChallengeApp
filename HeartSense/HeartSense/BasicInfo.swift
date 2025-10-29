@@ -96,7 +96,7 @@ struct BasicInfo: View {
         let ca = Double(caInput) ?? 0
 
         let threshold = 0.5
-        let result = nn?.predict(
+        let result = nn?.predictManual(
             age: age,
             sex: sex,
             cp: cp,

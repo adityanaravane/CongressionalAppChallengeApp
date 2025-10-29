@@ -31,13 +31,13 @@ struct HealthKitData {
     var ecgData: ECGWaveform = ECGWaveform()
 }
 
-enum ChestPainType: String, CaseIterable, Identifiable, Hashable {
-    case nopain
+enum ChestPainType: Int, CaseIterable, Identifiable, Hashable  {
+    case nopain = 0
     case mild
     case moderate
     case severe
     
-    var id: String{ rawValue }
+    var id: String{ title }
     var title: String {
         switch self {
         case .nopain: return "No Pain"
@@ -65,9 +65,9 @@ struct AllData {
     var ecgResults: ECGResultsType = .normal
     var chestPain: ChestPainType = .nopain
     var exerciseInducedPain: Bool = false
-    var stDepression: Double = Double.random(in: 0.0...5.6)
-    var stSlope: Int = Int.random(in: 0...2)
-    var numVessels: Int = Int.random(in: 0...3)
+    var stDepression: Double = 2//Double.random(in: 0.0...5.6)
+    var stSlope: Int = 2 //Int.random(in: 0...2)
+    var numVessels: Int = 3//Int.random(in: 0...3)
 }
 
 struct HealthInfoView: View {
@@ -218,14 +218,36 @@ struct OtherSymptomsView: View {
 
 struct ResultView: View {
     @Binding var data: AllData
+    @State var showResultsString: String = "updating now"
+    @State var showResultsImage: String = "Check"
+    let nn = HeartModelRunner()
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Results")
+            Image(showResultsImage)
+                .resizable()
+                .frame(width: 100, height: 100)
+            Text(showResultsString)
         }
         .padding()
+        .onAppear() {
+            
+                let result = nn?.predict(userdata: data)
+                print(result)
+                if let isLikely = result {
+                    showResultsString = isLikely ? "Heart disease likely" : "Heart disease unlikely"
+                    showResultsImage = isLikely ? "ExMark" : "Check"
+                }  else {
+                        showResultsString = "Unable to determine result"
+                    showResultsImage = "Check"
+                    }
+                
+            
+            }
+        }
     }
-}
+
+
 
 enum ApplicationStep {
     case healthInfo
