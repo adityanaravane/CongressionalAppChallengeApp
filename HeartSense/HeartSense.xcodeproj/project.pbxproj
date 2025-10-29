@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		A1D6C45D2EA98F1E0040FFC2 /* HeartSense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeartSense.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1D6C45D2EA98F1E0040FFC2 /* Cardian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cardian.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "HeartSense" target */ = {
+		A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "Cardian" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = A1D6C45C2EA98F1E0040FFC2 /* HeartSense */;
+			target = A1D6C45C2EA98F1E0040FFC2 /* Cardian */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -24,7 +24,7 @@
 		A1D6C45F2EA98F1E0040FFC2 /* HeartSense */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "HeartSense" target */,
+				A165A6F02EAD061D004A9E7E /* Exceptions for "HeartSense" folder in "Cardian" target */,
 			);
 			path = HeartSense;
 			sourceTree = "<group>";
@@ -53,7 +53,7 @@
 		A1D6C45E2EA98F1E0040FFC2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1D6C45D2EA98F1E0040FFC2 /* HeartSense.app */,
+				A1D6C45D2EA98F1E0040FFC2 /* Cardian.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,9 +61,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A1D6C45C2EA98F1E0040FFC2 /* HeartSense */ = {
+		A1D6C45C2EA98F1E0040FFC2 /* Cardian */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A1D6C4682EA98F1F0040FFC2 /* Build configuration list for PBXNativeTarget "HeartSense" */;
+			buildConfigurationList = A1D6C4682EA98F1F0040FFC2 /* Build configuration list for PBXNativeTarget "Cardian" */;
 			buildPhases = (
 				A1D6C4592EA98F1E0040FFC2 /* Sources */,
 				A1D6C45A2EA98F1E0040FFC2 /* Frameworks */,
@@ -76,11 +76,11 @@
 			fileSystemSynchronizedGroups = (
 				A1D6C45F2EA98F1E0040FFC2 /* HeartSense */,
 			);
-			name = HeartSense;
+			name = Cardian;
 			packageProductDependencies = (
 			);
 			productName = HeartSense;
-			productReference = A1D6C45D2EA98F1E0040FFC2 /* HeartSense.app */;
+			productReference = A1D6C45D2EA98F1E0040FFC2 /* Cardian.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -112,7 +112,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A1D6C45C2EA98F1E0040FFC2 /* HeartSense */,
+				A1D6C45C2EA98F1E0040FFC2 /* Cardian */,
 			);
 		};
 /* End PBXProject section */
@@ -268,10 +268,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HeartSense/Info.plist;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need to access health records to predict heart condition";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -302,10 +301,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HeartSense/Info.plist;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Need to access health records to predict heart condition";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -337,7 +335,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1D6C4682EA98F1F0040FFC2 /* Build configuration list for PBXNativeTarget "HeartSense" */ = {
+		A1D6C4682EA98F1F0040FFC2 /* Build configuration list for PBXNativeTarget "Cardian" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1D6C4692EA98F1F0040FFC2 /* Debug */,
