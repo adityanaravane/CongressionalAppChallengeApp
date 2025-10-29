@@ -16,12 +16,19 @@ enum Gender: String, CaseIterable, Identifiable, Hashable {
 
 struct HealthKitData {
     var age: Int = Int.random(in: 35...75)
+    var ageAvailable: Bool = false
     var gender: Gender = .male
+    var genderAvailable: Bool = false
     var heartRate: Int = Int.random(in: 50...200)
+    var heartRateAvailable: Bool = false
     var bloodPressure: Int = Int.random(in: 70...150)
+    var boodPressureAvailable: Bool = false
     var cholesterol: Int = Int.random(in: 150...300)
+    var cholesterolAvailable: Bool = false
     var bloodGlucose: Int = Int.random(in: 70...200)
+    var bloodGlucoseAvailable: Bool = false
     var authorized: Bool = false
+    var ecgData: ECGWaveform = ECGWaveform()
 }
 
 enum ChestPainType: String, CaseIterable, Identifiable, Hashable {
@@ -61,8 +68,6 @@ struct AllData {
     var stDepression: Double = Double.random(in: 0.0...5.6)
     var stSlope: Int = Int.random(in: 0...2)
     var numVessels: Int = Int.random(in: 0...3)
-    
-   
 }
 
 struct HealthInfoView: View {
@@ -73,7 +78,7 @@ struct HealthInfoView: View {
                 Section(header: Text("Basic Information")) {
                     Stepper(value: $healthInfo.age, in: 35...75, step: 1) {
                         HStack {
-                            if healthInfo.authorized {
+                            if healthInfo.ageAvailable {
                                 Image("applehealthkit")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -88,7 +93,7 @@ struct HealthInfoView: View {
                     }
                     
                     HStack{
-                        if healthInfo.authorized {
+                        if healthInfo.genderAvailable {
                             Image("applehealthkit")
                                 .resizable()
                                 .frame(width: 24, height: 24)
@@ -106,7 +111,7 @@ struct HealthInfoView: View {
                 Section(header: Text("Health Information")) {
                     Stepper(value: $healthInfo.heartRate, in: 50...200, step: 1) {
                         HStack {
-                            if healthInfo.authorized {
+                            if healthInfo.heartRateAvailable {
                                 Image("applehealthkit")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -122,7 +127,7 @@ struct HealthInfoView: View {
                     
                     Stepper(value: $healthInfo.bloodPressure, in:70...200, step:1){
                         HStack{
-                            if healthInfo.authorized {
+                            if healthInfo.boodPressureAvailable {
                                 Image("applehealthkit")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -138,7 +143,7 @@ struct HealthInfoView: View {
                     
                     Stepper(value:$healthInfo.bloodGlucose, in:70...200, step:1){
                         HStack{
-                            if healthInfo.authorized {
+                            if healthInfo.bloodGlucoseAvailable {
                                 Image("applehealthkit")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -154,7 +159,7 @@ struct HealthInfoView: View {
                     
                     Stepper(value: $healthInfo.cholesterol, in:150...300, step:1){
                         HStack{
-                            if healthInfo.authorized {
+                            if healthInfo.cholesterolAvailable {
                                 Image("applehealthkit")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -201,6 +206,12 @@ struct OtherSymptomsView: View {
                     }
                 }
             }
+            
+            Section(header: Text("Latest Electrocardiogram")){
+                
+                ECGView(ecg:$data.healthkitInfo.ecgData)
+                
+            }
         }
     }
 }
@@ -240,7 +251,7 @@ struct ApplicationView: View {
     var body: some View {
         VStack {
             if isLoading {
-                ProgressView("Loading data...")
+                ProgressView("Loading health data...")
             } else {
                 
                 switch currentStep {
@@ -285,10 +296,29 @@ struct ApplicationView: View {
         print("Authorized: \(authorized)")
         print("Authorized inside healthInfo: \(data.healthkitInfo.authorized)")
         
-        data.healthkitInfo.heartRate = (healthData.heartRate > 0) ? healthData.heartRate : data.healthkitInfo.heartRate
-        data.healthkitInfo.bloodPressure = (healthData.bloodPressure > 0) ? healthData.bloodPressure : data.healthkitInfo.bloodPressure
-        data.healthkitInfo.bloodGlucose = (healthData.bloodGlucose > 0) ? healthData.bloodGlucose : data.healthkitInfo.bloodGlucose
-        data.healthkitInfo.age = (healthData.Age > 0) ? healthData.Age : data.healthkitInfo.age
+        if(healthData.heartRate > 0){
+            data.healthkitInfo.heartRate = healthData.heartRate
+            data.healthkitInfo.heartRateAvailable = true
+        }
+        if(healthData.bloodPressure > 0){
+            data.healthkitInfo.bloodPressure = healthData.bloodPressure
+            data.healthkitInfo.boodPressureAvailable = true
+        }
+        if(healthData.bloodGlucose > 0) {
+            data.healthkitInfo.bloodGlucose = healthData.bloodGlucose
+            data.healthkitInfo.bloodGlucoseAvailable = true
+        }
+        if(healthData.cholesterol > 0){
+            data.healthkitInfo.cholesterol = healthData.cholesterol
+            data.healthkitInfo.cholesterolAvailable = true
+        }
+        if(healthData.Age > 0){
+            data.healthkitInfo.age = healthData.Age
+            data.healthkitInfo.ageAvailable = true
+            data.healthkitInfo.genderAvailable = true
+        }
+        data.healthkitInfo.ecgData = healthData.ecg
+        
         data.healthkitInfo.gender = Gender(rawValue: healthData.Gender) ?? .male
         
         isLoading = false

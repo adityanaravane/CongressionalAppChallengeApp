@@ -26,7 +26,7 @@ struct AnimatedImage: View {
             }
             .ignoresSafeArea()
             
-            .navigationBarTitle("Check my health...", displayMode: .large)
+            .navigationBarTitle("Cardian", displayMode: .large)
         }
     }
 

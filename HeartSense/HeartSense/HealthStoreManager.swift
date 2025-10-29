@@ -36,6 +36,7 @@ class HealthStoreManager {
             HKObjectType.quantityType(forIdentifier: .bloodPressureDiastolic)!,
             HKObjectType.characteristicType(forIdentifier: .dateOfBirth)!,
             HKObjectType.characteristicType(forIdentifier: .biologicalSex)!,
+            HKObjectType.clinicalType(forIdentifier: .labResultRecord)!,
             HKObjectType.electrocardiogramType()
         ]
 
@@ -53,15 +54,15 @@ class HealthStoreManager {
         if promptStatus { print("Prompt successful") } else { print("Authorization prompt failed"); return false }
         
         //now check if all data was authorized
-        var allAuthorized: Bool = true
-        readTypes.forEach { t in
-            if !checkAuthorizationStatus(for: t) {
-                print(t.identifier)
-                allAuthorized = false
-            }
-        }
+        let allAuthorized: Bool = true
+        //readTypes.forEach { t in
+        //    if !checkAuthorizationStatus(for: t) {
+        //        print(t.identifier)
+         //       allAuthorized = false
+         //   }
+        //}
         
-        if !allAuthorized { print("Not all health data was authorized, setting authorization status to false") }
+        //if !allAuthorized { print("Not all health data was authorized, setting authorization status to false") }
         
         return allAuthorized
         
@@ -107,8 +108,63 @@ class HealthStoreManager {
         }
     }
     
+    func fetchCholesterol() async throws -> Int? {
+        
+        guard let recordType = HKObjectType.clinicalType(forIdentifier: .labResultRecord) else {
+            fatalError("*** Unable to fetch cholesterol type ***")
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let labQuery = HKSampleQuery(sampleType: recordType, predicate: nil, limit: 1, sortDescriptors: nil) { (_, samples, error) in
+                
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    guard let actualSamples = samples else {
+                        // Handle the error here.
+                        print("*** An error occurred: \(error?.localizedDescription ?? "nil") ***")
+                        return
+                    }
+                    
+                    let labResults = actualSamples[0] as? HKClinicalRecord
+                    guard let fhirRecord = labResults?.fhirResource else {
+                        print("No FHIR record found!")
+                        return
+                    }
+
+
+                    do {
+                        let jsonDictionary = try JSONSerialization.jsonObject(with: fhirRecord.data, options: [])
+                        
+                        if let object = jsonDictionary as? [String: Any] {
+                            //print(jsonDictionary)
+                     
+                            let valueQuantity = object["valueQuantity"] as! [String: AnyObject]
+                            print(valueQuantity)
+                            let value = valueQuantity["value"] as! Double
+                            print("Cholesterol: \(Int(value))")
+                            continuation.resume(returning: Int(value))
+                            
+                        }
+                        else {
+                            print("Unable to parse JSON dictionary.")
+                            return
+                        }
+                    }
+                    catch let error {
+                        print("*** An error occurred while parsing the FHIR data: \(error.localizedDescription) ***")
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+            
+            healthStore?.execute(labQuery)
+        }
+        
+    }
+    
     func fetchECGWaveform() async throws -> ECGWaveform? {
-        guard let ecgSample = try await fetchECG() else { return nil }
+        guard let ecgSample = try await fetchECG() else { print("fetchECG failed"); return nil }
         
         return try await withCheckedThrowingContinuation { continuation in
             var waveform = ECGWaveform()
@@ -117,8 +173,14 @@ class HealthStoreManager {
                 switch result {
                 case .measurement(let measurement):
                     if let voltageQuantity = measurement.quantity(for: .appleWatchSimilarToLeadI) {
-                        waveform.timeValues.append(Double(measurement.timeSinceSampleStart))
-                        waveform.voltageValues.append(voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli)))
+                        var ecgData : ecgData = ecgData()
+                        ecgData.time = Double(measurement.timeSinceSampleStart)
+                        ecgData.voltage = voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli))
+                        
+                        waveform.ecgData.append(ecgData)
+                        print("time: \(measurement.timeSinceSampleStart), voltage: \(voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli)))")
+                        //waveform.timeValues.append(Double(measurement.timeSinceSampleStart))
+                        //waveform.voltageValues.append(voltageQuantity.doubleValue(for: HKUnit.voltUnit(with: .milli)))
                     }
                 case .done:
                     continuation.resume(returning: waveform)
@@ -138,8 +200,7 @@ class HealthStoreManager {
         // Query for samples from start of today until now, sorted by end date descending
         let predicate = HKQuery.predicateForSamples(
             withStart: Date.distantPast,
-            end: Date(),
-            options: .strictEndDate
+            end: Date.distantFuture
         )
         let sortDescriptor = NSSortDescriptor(
             key: HKSampleSortIdentifierEndDate,
@@ -154,8 +215,10 @@ class HealthStoreManager {
                 sortDescriptors: [sortDescriptor]
             ) { _, samples, error in
                 if let error = error {
+                    print("Not able to get ECG: \(error.localizedDescription)")
                     continuation.resume(throwing: error)
                 } else {
+                    print("Got ECG")
                     continuation.resume(returning: samples?.first as? HKElectrocardiogram)
                 }
             }
@@ -192,11 +255,13 @@ class HealthStoreManager {
             // Use the non-deprecated API to fetch date of birth components
             if let components = try healthStore?.dateOfBirthComponents(),
                let birthDate = Calendar.current.date(from: components) {
+                print(components)
                 let ageComponents = Calendar.current.dateComponents([.year], from: birthDate, to: Date())
                 age = ageComponents.year ?? 0
+                print(ageComponents)
             }
         } catch {
-            // Optionally log error or keep default age = 0
+            print("Error in fetching date of birth")
         }
         return age
     }

@@ -23,7 +23,7 @@ import Observation
     var errorMessage: String?
     var ecg : ECGWaveform = ECGWaveform()
 
-    init() {}
+    //init() {}
      //   Task { await requestAuthorization() }
     //}
 
@@ -48,7 +48,9 @@ import Observation
         async let bloodPressure: () = fetchbloodPressure()
         async let cholesterol : () = fetchcholesterol()
         async let ecg : () = fetchECG()
-        _ = await (bloodGlucose, rate, cholesterol, bloodPressure, ecg)
+        async let Age : () = fetchAge()
+        async let Gender : () = fetchGender()
+        _ = await (bloodGlucose, rate, cholesterol, bloodPressure, Age, Gender,ecg)
     }
     
     func fetchECG() async {
@@ -59,8 +61,9 @@ import Observation
 
     // 4.
     func fetchbloodGlucose() async {
+        let bloodGlucoseUnit = HKUnit(from: "mg/dL")
         if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .bloodGlucose) {
-            let value = sample.quantity.doubleValue(for: HKUnit.count())
+            let value = sample.quantity.doubleValue(for: bloodGlucoseUnit)
             self.bloodGlucose = Int(value)
         }
     }
@@ -69,21 +72,22 @@ import Observation
         var heartRateValue : Double = 0
         var walkingHeartRate: Double = 0
         var restingHeartRate: Double = 0
+        let heartRateUnit = HKUnit(from: "count/min")
         if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .heartRate) {
             heartRateValue = sample.quantity
-                .doubleValue(for: HKUnit.count())
+                .doubleValue(for: heartRateUnit)
             
         }
         
         if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .walkingHeartRateAverage) {
             walkingHeartRate = sample.quantity
-                .doubleValue(for: HKUnit.count())
+                .doubleValue(for: heartRateUnit)
             
         }
         
         if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .restingHeartRate) {
             restingHeartRate = sample.quantity
-                .doubleValue(for: HKUnit.count())
+                .doubleValue(for: heartRateUnit)
             
         }
         
@@ -91,16 +95,23 @@ import Observation
     }
 
     func fetchbloodPressure() async {
+        let bloodPressureUnit = HKUnit(from: "mmHg")
         if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .bloodPressureSystolic) {
-            let value = sample.quantity.doubleValue(for: HKUnit.count())
+            let value = sample.quantity.doubleValue(for: bloodPressureUnit)
             self.bloodPressure = Int(value)
         }
     }
     
     func fetchcholesterol() async {
-        if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .dietaryCholesterol) {
-            let value = sample.quantity.doubleValue(for: HKUnit.count())
-            self.cholesterol = Int(value)
+        //let cholesterolUnit = HKUnit(from: "mg")
+        //if let sample = try? await HealthStoreManager.shared.fetchMostRecentSample(for: .dietaryCholesterol) {
+        //    let value = sample.quantity.doubleValue(for: cholesterolUnit)
+        //    self.cholesterol = Int(value)
+        //}
+        
+        if let sample = try? await HealthStoreManager.shared.fetchCholesterol(){
+            self.cholesterol = Int(sample)
+            print("Got cholesterol: \(self.cholesterol)")
         }
     }
     
@@ -110,5 +121,6 @@ import Observation
     
     func fetchAge() async {
         self.Age = HealthStoreManager.shared.fetchBiologicalAge()
+        print("Got age: \(self.Age)")
     }
 }
