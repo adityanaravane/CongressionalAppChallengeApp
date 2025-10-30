@@ -65,9 +65,9 @@ struct AllData {
     var ecgResults: ECGResultsType = .normal
     var chestPain: ChestPainType = .nopain
     var exerciseInducedPain: Bool = false
-    var stDepression: Double = 2//Double.random(in: 0.0...5.6)
-    var stSlope: Int = 2 //Int.random(in: 0...2)
-    var numVessels: Int = 3//Int.random(in: 0...3)
+    var stDepression: Double = Double.random(in: 1.5...3)
+    var stSlope: Int = Int.random(in: 1...2)
+    var numVessels: Int = Int.random(in: 1...3)
 }
 
 struct HealthInfoView: View {
@@ -221,21 +221,58 @@ struct ResultView: View {
     @State var showResultsString: String = "updating now"
     @State var showResultsImage: String = "Check"
     let nn = HeartModelRunner()
-
+    let postivetext: String = "Congratulations, your heart is in great health"
+    let negativetext: String = "Please consult your physician soon, you may be at risk for heart disease"
+    
+    let disclaimer: String = "Please note that this is a ai app and the results are not scientifically proven. This should not be taken as medical advice."
+    
     var body: some View {
-        VStack(spacing: 16) {
-            Image(showResultsImage)
-                .resizable()
-                .frame(width: 100, height: 100)
-            Text(showResultsString)
+        Form{
+            Section(header: Text("Results")) {
+                VStack(alignment: .center, spacing: 16) {
+                    Image(showResultsImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 120, height: 120)
+                        .frame(maxWidth: .infinity)
+                    Text(showResultsString)
+                        .multilineTextAlignment(.center)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 8)
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.yellow)
+                            Text("Disclaimer")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                        }
+                        Text(disclaimer)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(12)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
+            
         }
         .padding()
         .onAppear() {
-            
                 let result = nn?.predict(userdata: data)
                 print(result)
                 if let isLikely = result {
-                    showResultsString = isLikely ? "Heart disease likely" : "Heart disease unlikely"
+                    showResultsString = isLikely ? postivetext : negativetext
                     showResultsImage = isLikely ? "ExMark" : "Check"
                 }  else {
                         showResultsString = "Unable to determine result"
@@ -350,3 +387,4 @@ struct ApplicationView: View {
 #Preview {
     ApplicationView()
 }
+

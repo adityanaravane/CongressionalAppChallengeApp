@@ -40,7 +40,7 @@ struct ECGView: View {
     }
 
     var body: some View {
-        let d = ecg.printData
+        //let d = ecg.printData
         Chart(ecg.ecgData) { point in
             LineMark(
                 x: .value("Time", point.time),

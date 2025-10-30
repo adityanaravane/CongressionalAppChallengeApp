@@ -59,6 +59,7 @@ final class HeartModelRunner {
             fbs: fbs, restecg: restecg, thalach: thalach, exang: exang,
             oldpeak: oldpeak, slope: slope, ca: ca
         ) else { return nil }
+        print(p)
         return p >= threshold
     }
     
@@ -78,18 +79,31 @@ final class HeartModelRunner {
         if userData.ecgResults == .normal {
             restecg = 0.0
         }
-        if userData.ecgResults == .abnormal {
+        else if userData.ecgResults == .abnormal {
              restecg = 1.0
             
         } else {
              restecg = 0.0
         }
         
-
+        print("age: \(age)")
+        print("sex: \(sex)")
+        print("cp: \(cp)")
+        print("trestbps: \(trestbps)")
+        print("chol: \(chol)")
+        print("fbs: \(fbs)")
+        print("restecg: \(restecg)")
+        print("thalach: \(thalach)")
+        print("exang: \(exang)")
+        print("oldpeak: \(oldpeak)")
+        print("slope: \(slope)")
+        print("ca: \(ca)")
+        print("restecg: \(restecg)")
+        
         return predictManual(
             age: age, sex: sex, cp: cp, trestbps: trestbps, chol: chol,
             fbs: fbs, restecg: restecg, thalach: thalach, exang: exang,
-            oldpeak: oldpeak, slope: slope, ca: ca
+            oldpeak: oldpeak, slope: slope, ca: ca, threshold: 0.5
         )
     }
 
@@ -100,7 +114,7 @@ final class HeartModelRunner {
         oldpeak: Double, slope: Double, ca: Double
     ) -> Double? {
 
-        let features: [Double] = [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca]]
+        let features: [Double] = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca]
 
         // Build input MLMultiArray with correct rank/shape/dtype (e.g., [1,12])
         guard let inputArray = makeInputArray(features) else { return nil }
@@ -190,6 +204,7 @@ final class HeartModelRunner {
         print("Unexpected model output keys: \(Array(out.featureNames))")
         return nil
     }
+    
 }
 
 // MARK: - Helpers

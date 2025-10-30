@@ -111,6 +111,8 @@ struct BasicInfo: View {
             ca: ca,
             threshold: threshold
         )
+        
+        print(result)
 
         // Assume result is a Bool or something convertible; if optional, unwrap safely
         if let isLikely = result as? Bool {
