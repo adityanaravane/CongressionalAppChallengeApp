@@ -1,3 +1,7 @@
+If you want a full app demo/explanation here it is: https://www.youtube.com/watch?v=qBhYtcL9ltU
+
+If you want to follow the congressional app challenge style video here it is: https://www.youtube.com/watch?v=2BE54_GO-Hc
+
 Cardian can predict the possibility of heart disease. It takes in a few medical parameters like age, gender, heart rate, blood sugar,  blood pressure, resting ECG, and if the user has chest pain. These are either recorded by smart devices (like apple watch) and in a routine lab or yearly physical. 
 
 The app asks users for permission to read their health information and clinical records. User can choose to not share this information, in which case, user can input the values manually. This app does not save, modify or share this information, the parameters are simple read from the Apple Health app and used only when the app is opened. 
@@ -13,5 +17,3 @@ If you want to try out this app by yourself, then you should clone the git repos
 If you want to try out the python interface, open the folder titled "python" and run the GUI.py file
 If you want to try the ios app, then you should open the folder titled "HeartSense" in Xcode, and then run the simulator
 
-If you want to follow the congressional app challenge style video here it is: [(https://www.youtube.com/watch?v=2BE54_GO-Hc)]
-If you want a full app demo/explanation here it is: [(https://www.youtube.com/watch?v=qBhYtcL9ltU)]
